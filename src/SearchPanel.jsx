@@ -2,13 +2,23 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import TextInput from './reusable/TextInput.jsx';
 import Button from './reusable/Button.jsx';
-import { setTextFilter, updateSearchResults } from './redux/actions';
+import {
+  setTextFilter,
+  updateSearchResults,
+  setViewedRecord,
+  loadViewedRecord
+} from './redux/actions';
+import Spacer from './reusable/Spacer.jsx';
 
 class SearchPanel extends Component {
   constructor(props) {
     super(props);
+    this.onRecordClick = this.onRecordClick.bind(this);
   }
-  componentWillReceiveProps() {}
+
+  onRecordClick(record) {
+    this.props.viewRecord(record.uuid);
+  }
 
   render() {
     return (
@@ -27,27 +37,43 @@ class SearchPanel extends Component {
             FEATURES
           </Button>
         </div>
-        <div className="flex-spacer" />
+        <Spacer />
         <TextInput
           placeholder="Search by text..."
           onChange={this.props.setTextFilter}
         />
-        <div className="flex-spacer" />
+        <Spacer />
         <div className="">
           <Button className="flex-grow">TEMPORAL EXTENT</Button>
         </div>
-        <div className="flex-spacer" />
-        <div className="flex-col">
-          <div className="highlight-panel search-result">Search result</div>
+        <Spacer />
+        <div className="scroll-y flex-col">
+          {this.props.records.map(record => (
+            <div key={record.uuid}>
+              <div className="highlight-panel search-result">
+                <div>{record.title}</div>
+                <Button onClick={() => this.onRecordClick(record)}>VIEW</Button>
+              </div>
+              <Spacer />
+            </div>
+          ))}
         </div>
       </div>
     );
   }
 }
 
+SearchPanel.defaultProps = {
+  records: [],
+  searching: false,
+  filters: {}
+};
+
 const mapStateToProps = (state, ownProps) => {
   return {
-    filters: state.searchFilters
+    filters: state.searchFilters,
+    records: state.records,
+    searching: state.searching
   };
 };
 
@@ -56,6 +82,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     setTextFilter: text => {
       dispatch(setTextFilter(text));
       dispatch(updateSearchResults());
+    },
+    viewRecord: uuid => {
+      dispatch(setViewedRecord(uuid));
+      dispatch(loadViewedRecord());
     }
   };
 };

@@ -60,14 +60,18 @@ export function receiveRecord(record) {
   return { type: RECEIVE_RECORD, record };
 }
 
-export function loadRecord(uuid) {
-  return function(dispatch) {
-    return fetch(`${QUERY_URL}?uuid=${uuid}`)
+export function receiveRecordLoadError(error) {
+  return { type: RECEIVE_RECORD, record: { error } };
+}
+
+export function loadViewedRecord() {
+  return function(dispatch, getState) {
+    return fetch(`${QUERY_URL}?uuid=${getState().viewedRecordUuid}`)
       .then(
         response => response.json(),
-        error => dispatch(receiveSearchError(error))
+        error => dispatch(receiveRecordLoadError(error))
       )
-      .then(json => dispatch(receiveRecord(json.record)));
+      .then(json => dispatch(receiveRecord(json.hits.hits[0]._source)));
   };
 }
 
@@ -78,6 +82,17 @@ export function updateSearchResults() {
         response => response.json(),
         error => dispatch(receiveSearchError(error))
       )
-      .then(json => dispatch(receiveSearchResults(json.record)));
+      .then(json => {
+        dispatch(
+          receiveSearchResults(
+            json.hits.hits.map(hit => {
+              return {
+                uuid: hit._source.uuid,
+                title: hit._source.resourceTitle
+              };
+            })
+          )
+        );
+      });
   };
 }
