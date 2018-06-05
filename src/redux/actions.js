@@ -20,6 +20,13 @@ export function setTextFilter(text) {
   };
 }
 
+export function setResultType(type) {
+  return {
+    type: UPDATE_SEARCH_FILTERS,
+    filters: { type: type }
+  };
+}
+
 export function setSpatialFilter(minX, minY, maxX, maxY) {
   return {
     type: UPDATE_SEARCH_FILTERS,
@@ -88,9 +95,11 @@ export function loadViewedRecord() {
   };
 }
 
+// this must be called to refresh the results
 export function updateSearchResults() {
+  // facets update
   return function(dispatch, getState) {
-    return fetch(QUERY_URL, {
+    fetch(QUERY_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -115,14 +124,12 @@ export function updateSearchResults() {
         error => dispatch(receiveSearchError(error))
       )
       .then(json => {
+        if (json.error) {
+          dispatch(receiveSearchError(json.error.reason));
+          return;
+        }
         dispatch(
           receiveSearchResults({
-            records: json.hits.hits.map(hit => {
-              return {
-                uuid: hit._source.uuid,
-                title: hit._source.resourceTitle
-              };
-            }),
             types: json.aggregations.types.buckets.reduce(
               (prev, curr, index) => {
                 prev[curr.key] = curr.doc_count;
@@ -130,6 +137,52 @@ export function updateSearchResults() {
               },
               {}
             )
+          })
+        );
+      });
+
+    // results update
+    fetch(QUERY_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        query: {
+          bool: {
+            must: [
+              {
+                query_string: {
+                  query: getState().searchFilters.text || ''
+                }
+              },
+              {
+                term: {
+                  resourceType: getState().searchFilters.type
+                }
+              }
+            ]
+          }
+        }
+      })
+    })
+      .then(
+        response => response.json(),
+        error => dispatch(receiveSearchError(error))
+      )
+      .then(json => {
+        if (json.error) {
+          dispatch(receiveSearchError(json.error.reason));
+          return;
+        }
+        dispatch(
+          receiveSearchResults({
+            records: json.hits.hits.map(hit => {
+              return {
+                uuid: hit._source.uuid,
+                title: hit._source.resourceTitle
+              };
+            })
           })
         );
       });

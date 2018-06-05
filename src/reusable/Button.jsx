@@ -3,7 +3,10 @@ import React, { Component } from 'react';
 class Button extends Component {
   render() {
     const attrs = {
-      className: 'text-nowrap ' + this.props.className
+      className:
+        'text-nowrap ' +
+        (this.props.toggled ? 'toggled ' : '') +
+        this.props.className
     };
     return (
       <button {...attrs} onClick={this.props.onClick}>
@@ -16,7 +19,8 @@ class Button extends Component {
 
 Button.defaultProps = {
   className: '',
-  onClick: () => {}
+  onClick: () => {},
+  toggled: false
 };
 
 export default Button;

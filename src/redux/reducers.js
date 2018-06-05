@@ -7,6 +7,10 @@ import {
   RECEIVE_RECORD
 } from './actions';
 
+const initialFilters = {
+  type: 'dataset'
+};
+
 function viewedRecordUuid(state = null, action) {
   switch (action.type) {
     case SET_VIEWED_RECORD:
@@ -27,7 +31,7 @@ function viewedRecord(state = null, action) {
   }
 }
 
-function searchFilters(state = {}, action) {
+function searchFilters(state = initialFilters, action) {
   switch (action.type) {
     case UPDATE_SEARCH_FILTERS:
       return {

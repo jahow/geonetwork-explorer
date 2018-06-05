@@ -133,30 +133,46 @@ body {
   overflow-x: auto;
 }
 
-.standard-panel {
+// colors
+@panel-color: lightsalmon;
+@panel-color-highlight: rgb(255, 198, 175);
+@panel-color-error: rgb(236, 162, 0);
+@button-color: red;
+@button-color-toggled: #00b1ec;
+
+// effects
+@panel-shadow: 0px 3px 3px rgba(0, 0, 0, 0.192);
+
+// PANELS
+.panel(@color) {
   padding: 1.4em;
-  background-color: lightsalmon;
-  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.192);
+  background-color: @color;
+  box-shadow: @panel-shadow;
+}
+.standard-panel {
+  .panel(lightsalmon);
 }
 .highlight-panel {
-  padding: 1.4em;
-  background-color: rgb(255, 198, 175);
-  box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.192);
+  .panel(@panel-color-highlight);
 }
-button {
-  background-color: red;
+.error-panel {
+  .panel(@panel-color-error);
+}
+
+// BUTTONS
+.button(@color) {
+  background-color: @color;
   border-radius: 3px;
   border: none;
   color: white;
   padding: 0.7em;
   line-height: 1em;
   &:hover {
-    background-color: rgb(255, 67, 67);
+    background-color: lighten(@color, 10%);
     cursor: pointer;
-    /* outline: 2px solid black; */
   }
   &:active {
-    background-color: rgb(226, 0, 0);
+    background-color: darken(@color, 10%);
   }
   &:not(:last-of-type) {
     border-top-right-radius: 0px;
@@ -167,23 +183,30 @@ button {
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
   }
-}
-.badge {
-  border-radius: 10px;
-  background-color: white;
-  color: black;
-  padding: 6px;
-  margin-left: 4px;
-  margin-right: 4px;
-  font-size: 0.8em;
-  line-height: 1em;
-  display: inline-block;
-  min-width: 24px;
-  &:first-child {
-    margin-left: 0px;
+  .badge {
+    border-radius: 10px;
+    background-color: white;
+    color: black;
+    padding: 6px;
+    margin-left: 4px;
+    margin-right: 4px;
+    font-size: 0.8em;
+    line-height: 1em;
+    display: inline-block;
+    min-width: 24px;
+    &:first-child {
+      margin-left: 0px;
+    }
+    &:last-child {
+      margin-right: 0px;
+    }
   }
-  &:last-child {
-    margin-right: 0px;
+}
+
+button {
+  .button(@button-color);
+  &.toggled {
+    .button(@button-color-toggled);
   }
 }
 
@@ -196,6 +219,7 @@ button {
     width: 100%;
     border-radius: 0px;
     border: none;
+    background: white;
   }
   box-shadow: 0px 3px 3px rgba(0, 0, 0, 0.192);
   position: relative;

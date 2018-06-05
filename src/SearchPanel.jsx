@@ -6,7 +6,8 @@ import {
   setTextFilter,
   updateSearchResults,
   setViewedRecord,
-  loadViewedRecord
+  loadViewedRecord,
+  setResultType
 } from './redux/actions';
 import Spacer from './reusable/Spacer.jsx';
 
@@ -27,24 +28,32 @@ class SearchPanel extends Component {
           <Button
             className="flex-grow"
             badge={this.props.resultTypes.dataset || '0'}
+            toggled={this.props.filters.type === 'dataset'}
+            onClick={() => this.props.setResultType('dataset')}
           >
             DATASETS
           </Button>
           <Button
             className="flex-grow"
             badge={this.props.resultTypes.series || '0'}
+            toggled={this.props.filters.type === 'series'}
+            onClick={() => this.props.setResultType('series')}
           >
             SERIES
           </Button>
           <Button
             className="flex-grow"
             badge={this.props.resultTypes.service || '0'}
+            toggled={this.props.filters.type === 'service'}
+            onClick={() => this.props.setResultType('service')}
           >
             SERVICES
           </Button>
           <Button
             className="flex-grow"
             badge={this.props.resultTypes.feature || '0'}
+            toggled={this.props.filters.type === 'feature'}
+            onClick={() => this.props.setResultType('feature')}
           >
             FEATURES
           </Button>
@@ -60,6 +69,9 @@ class SearchPanel extends Component {
         </div>
         <Spacer />
         <div className="scroll-y flex-col">
+          {this.props.searchError && (
+            <div className="error-panel">{this.props.searchError}</div>
+          )}
           {this.props.records.map(record => (
             <div key={record.uuid}>
               <div className="highlight-panel search-result">
@@ -79,7 +91,8 @@ SearchPanel.defaultProps = {
   records: [],
   resultTypes: {},
   searching: false,
-  filters: {}
+  filters: {},
+  searchError: null
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -87,7 +100,8 @@ const mapStateToProps = (state, ownProps) => {
     filters: state.searchFilters,
     records: state.records,
     searching: state.searching,
-    resultTypes: state.resultTypes
+    resultTypes: state.resultTypes,
+    searchError: state.searchError
   };
 };
 
@@ -100,6 +114,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     viewRecord: uuid => {
       dispatch(setViewedRecord(uuid));
       dispatch(loadViewedRecord());
+    },
+    setResultType: type => {
+      dispatch(setResultType(type));
+      dispatch(updateSearchResults());
     }
   };
 };
