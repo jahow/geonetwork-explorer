@@ -6,10 +6,19 @@ import { createStore, applyMiddleware, compose } from 'redux';
 import appState from './redux/reducers';
 import { Provider } from 'react-redux';
 
+const logger = store => next => action => {
+  console.group(action.type);
+  console.info('dispatching', action);
+  let result = next(action);
+  console.log('next state', store.getState());
+  console.groupEnd();
+  return result;
+};
+
 const store = createStore(
   appState,
   compose(
-    applyMiddleware(thunkMiddleware),
+    applyMiddleware(logger, thunkMiddleware),
     window.__REDUX_DEVTOOLS_EXTENSION__
       ? window.__REDUX_DEVTOOLS_EXTENSION__()
       : f => f
