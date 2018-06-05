@@ -91,11 +91,15 @@ export function loadViewedRecord() {
     })
       .then(
         response => response.json(),
-        error => dispatch(receiveRecordLoadError(error))
+        error => dispatch(receiveRecordLoadError(error.message))
       )
       .then(json => {
         if (json.error) {
           dispatch(receiveRecordLoadError(json.error.reason));
+          return;
+        }
+        if (!json.hits) {
+          dispatch(receiveSearchError('Geonetwork could not be reached.'));
           return;
         }
         if (!json.hits.hits.length) {
@@ -133,11 +137,15 @@ export function updateSearchResults() {
     })
       .then(
         response => response.json(),
-        error => dispatch(receiveSearchError(error))
+        error => dispatch(receiveSearchError(error.message))
       )
       .then(json => {
         if (json.error) {
           dispatch(receiveSearchError(json.error.reason));
+          return;
+        }
+        if (!json.hits) {
+          dispatch(receiveSearchError('Geonetwork could not be reached.'));
           return;
         }
         dispatch(
@@ -180,11 +188,15 @@ export function updateSearchResults() {
     })
       .then(
         response => response.json(),
-        error => dispatch(receiveSearchError(error))
+        error => dispatch(receiveSearchError(error.message))
       )
       .then(json => {
         if (json.error) {
           dispatch(receiveSearchError(json.error.reason));
+          return;
+        }
+        if (!json.hits) {
+          dispatch(receiveSearchError('Geonetwork could not be reached.'));
           return;
         }
         dispatch(
