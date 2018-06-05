@@ -1,3 +1,5 @@
+import { GEONETWORK_URL } from '../constants.js';
+
 /*
  * action types
  */
@@ -11,7 +13,7 @@ export const RECEIVE_RECORD = 'receive_record';
  * action creators
  */
 
-const QUERY_URL = 'http://localhost:8080/geonetwork/index/records/_search';
+const QUERY_URL = `${GEONETWORK_URL}/index/records/_search`;
 
 export function setTextFilter(text) {
   return {

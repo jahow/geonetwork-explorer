@@ -10,7 +10,7 @@ class ViewRecordPanel extends Component {
         <div>
           <div class="highlight-panel">
             {key}:<br />
-            {record[key]}
+            {JSON.stringify(record[key])}
           </div>
           <Spacer />
         </div>

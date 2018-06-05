@@ -132,6 +132,20 @@ body {
 .scroll-x {
   overflow-x: auto;
 }
+.scroll {
+  overflow-x: auto;
+  overflow-y: auto;
+}
+.no-overflow-y {
+  overflow-y: hidden;
+}
+.no-overflow-x {
+  overflow-x: hidden;
+}
+.no-overflow {
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
 
 // colors
 @panel-color: lightsalmon;
@@ -172,33 +186,38 @@ body {
     cursor: pointer;
   }
   &:active {
-    background-color: darken(@color, 10%);
-  }
-  &:not(:last-of-type) {
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
-    border-right: 2px solid rgba(0, 0, 0, 0.2);
-  }
-  &:not(:first-of-type) {
-    border-top-left-radius: 0px;
-    border-bottom-left-radius: 0px;
+    background-color: darken(@color, 5%);
   }
   .badge {
     border-radius: 10px;
     background-color: white;
     color: black;
     padding: 6px;
-    margin-left: 4px;
-    margin-right: 4px;
     font-size: 0.8em;
     line-height: 1em;
-    display: inline-block;
     min-width: 24px;
-    &:first-child {
-      margin-left: 0px;
+  }
+
+  .button-bar.horizontal & {
+    &:not(:last-of-type) {
+      border-top-right-radius: 0px;
+      border-bottom-right-radius: 0px;
+      border-right: 2px solid rgba(0, 0, 0, 0.2);
     }
-    &:last-child {
-      margin-right: 0px;
+    &:not(:first-of-type) {
+      border-top-left-radius: 0px;
+      border-bottom-left-radius: 0px;
+    }
+  }
+  .button-bar.vertical & {
+    &:not(:last-of-type) {
+      border-bottom-left-radius: 0px;
+      border-bottom-right-radius: 0px;
+      border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+    }
+    &:not(:first-of-type) {
+      border-top-left-radius: 0px;
+      border-top-right-radius: 0px;
     }
   }
 }

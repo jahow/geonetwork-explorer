@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import TextInput from './reusable/TextInput.jsx';
+import ButtonBar from './reusable/ButtonBar.jsx';
 import Button from './reusable/Button.jsx';
 import {
   setTextFilter,
@@ -10,21 +11,30 @@ import {
   setResultType
 } from './redux/actions';
 import Spacer from './reusable/Spacer.jsx';
+import { GEONETWORK_URL } from './constants.js';
 
 class SearchPanel extends Component {
   constructor(props) {
     super(props);
-    this.onRecordClick = this.onRecordClick.bind(this);
+    this.onRecordViewRequest = this.onRecordViewRequest.bind(this);
+    this.onRecordExternalViewRequest = this.onRecordExternalViewRequest.bind(
+      this
+    );
+    this.props.setTextFilter('');
   }
 
-  onRecordClick(record) {
+  onRecordViewRequest(record) {
     this.props.viewRecord(record.uuid);
+  }
+
+  onRecordExternalViewRequest(record) {
+    window.open(`${GEONETWORK_URL}/metadata/${record.uuid}`);
   }
 
   render() {
     return (
       <div className="pos-relative width-25 flex-col standard-panel">
-        <div className="flex-row">
+        <ButtonBar vertical>
           <Button
             className="flex-grow"
             badge={this.props.resultTypes.dataset || '0'}
@@ -57,7 +67,7 @@ class SearchPanel extends Component {
           >
             FEATURES
           </Button>
-        </div>
+        </ButtonBar>
         <Spacer />
         <TextInput
           placeholder="Search by text..."
@@ -76,7 +86,17 @@ class SearchPanel extends Component {
             <div key={record.uuid}>
               <div className="highlight-panel search-result">
                 <div>{record.title}</div>
-                <Button onClick={() => this.onRecordClick(record)}>VIEW</Button>
+                <div className="flex-row">
+                  <Button onClick={() => this.onRecordViewRequest(record)}>
+                    OPEN
+                  </Button>
+                  <Spacer />
+                  <Button
+                    onClick={() => this.onRecordExternalViewRequest(record)}
+                  >
+                    VIEW IN GEONETWORK
+                  </Button>
+                </div>
               </div>
               <Spacer />
             </div>
