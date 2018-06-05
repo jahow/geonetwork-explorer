@@ -24,16 +24,28 @@ class SearchPanel extends Component {
     return (
       <div className="pos-relative width-25 flex-col standard-panel">
         <div className="flex-row">
-          <Button className="flex-grow" badge={23}>
+          <Button
+            className="flex-grow"
+            badge={this.props.resultTypes.dataset || '0'}
+          >
             DATASETS
           </Button>
-          <Button className="flex-grow" badge={3}>
+          <Button
+            className="flex-grow"
+            badge={this.props.resultTypes.series || '0'}
+          >
             SERIES
           </Button>
-          <Button className="flex-grow" badge={43}>
+          <Button
+            className="flex-grow"
+            badge={this.props.resultTypes.service || '0'}
+          >
             SERVICES
           </Button>
-          <Button className="flex-grow" badge={532}>
+          <Button
+            className="flex-grow"
+            badge={this.props.resultTypes.feature || '0'}
+          >
             FEATURES
           </Button>
         </div>
@@ -65,6 +77,7 @@ class SearchPanel extends Component {
 
 SearchPanel.defaultProps = {
   records: [],
+  resultTypes: {},
   searching: false,
   filters: {}
 };
@@ -73,7 +86,8 @@ const mapStateToProps = (state, ownProps) => {
   return {
     filters: state.searchFilters,
     records: state.records,
-    searching: state.searching
+    searching: state.searching,
+    resultTypes: state.resultTypes
   };
 };
 

@@ -34,10 +34,11 @@ export function setTemporalFilter(minTime, maxTime) {
   };
 }
 
-export function receiveSearchResults(records) {
+export function receiveSearchResults(results) {
   return {
     type: SEARCH_ENDED,
-    records
+    records: results.records,
+    resultTypes: results.types
   };
 }
 
@@ -95,6 +96,13 @@ export function updateSearchResults() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        aggs: {
+          types: {
+            terms: {
+              field: 'resourceType'
+            }
+          }
+        },
         query: {
           query_string: {
             query: getState().searchFilters.text || ''
@@ -108,14 +116,21 @@ export function updateSearchResults() {
       )
       .then(json => {
         dispatch(
-          receiveSearchResults(
-            json.hits.hits.map(hit => {
+          receiveSearchResults({
+            records: json.hits.hits.map(hit => {
               return {
                 uuid: hit._source.uuid,
                 title: hit._source.resourceTitle
               };
-            })
-          )
+            }),
+            types: json.aggregations.types.buckets.reduce(
+              (prev, curr, index) => {
+                prev[curr.key] = curr.doc_count;
+                return prev;
+              },
+              {}
+            )
+          })
         );
       });
   };

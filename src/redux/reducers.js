@@ -68,12 +68,22 @@ function records(state = [], action) {
   }
 }
 
+function resultTypes(state = {}, action) {
+  switch (action.type) {
+    case SEARCH_ENDED:
+      return action.resultTypes || state;
+    default:
+      return state;
+  }
+}
+
 const appState = combineReducers({
   viewedRecordUuid,
   viewedRecord,
   searchFilters,
   searching,
   records,
+  resultTypes,
   searchError
 });
 
