@@ -3,13 +3,25 @@ import {
   UPDATE_SEARCH_FILTERS,
   SET_VIEWED_RECORD,
   RECORD_LOADED,
-  SEARCH_ENDED
+  SEARCH_ENDED,
+  RECEIVE_RECORD
 } from './actions';
 
 function viewedRecordUuid(state = null, action) {
   switch (action.type) {
     case SET_VIEWED_RECORD:
       return action.uuid;
+    default:
+      return state;
+  }
+}
+
+function viewedRecord(state = null, action) {
+  switch (action.type) {
+    case RECEIVE_RECORD:
+      return action.record;
+    case SET_VIEWED_RECORD:
+      return null;
     default:
       return state;
   }
@@ -58,6 +70,7 @@ function records(state = [], action) {
 
 const appState = combineReducers({
   viewedRecordUuid,
+  viewedRecord,
   searchFilters,
   searching,
   records,

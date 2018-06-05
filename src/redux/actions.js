@@ -16,7 +16,7 @@ const QUERY_URL = 'http://localhost:8080/geonetwork/index/records/_search';
 export function setTextFilter(text) {
   return {
     type: UPDATE_SEARCH_FILTERS,
-    filters: { textFilter: text }
+    filters: { text: text }
   };
 }
 
@@ -66,7 +66,19 @@ export function receiveRecordLoadError(error) {
 
 export function loadViewedRecord() {
   return function(dispatch, getState) {
-    return fetch(`${QUERY_URL}?uuid=${getState().viewedRecordUuid}`)
+    return fetch(QUERY_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        query: {
+          query_string: {
+            query: `uuid:${getState().viewedRecordUuid}`
+          }
+        }
+      })
+    })
       .then(
         response => response.json(),
         error => dispatch(receiveRecordLoadError(error))
@@ -76,8 +88,20 @@ export function loadViewedRecord() {
 }
 
 export function updateSearchResults() {
-  return function(dispatch) {
-    return fetch(`${QUERY_URL}`)
+  return function(dispatch, getState) {
+    return fetch(QUERY_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        query: {
+          query_string: {
+            query: getState().searchFilters.text || ''
+          }
+        }
+      })
+    })
       .then(
         response => response.json(),
         error => dispatch(receiveSearchError(error))
