@@ -81,8 +81,8 @@ export function loadViewedRecord() {
       },
       body: JSON.stringify({
         query: {
-          query_string: {
-            query: `uuid:${getState().viewedRecordUuid}`
+          match: {
+            uuid: getState().viewedRecordUuid
           }
         }
       })
@@ -91,7 +91,17 @@ export function loadViewedRecord() {
         response => response.json(),
         error => dispatch(receiveRecordLoadError(error))
       )
-      .then(json => dispatch(receiveRecord(json.hits.hits[0]._source)));
+      .then(json => {
+        if (json.error) {
+          dispatch(receiveRecordLoadError(json.error.reason));
+          return;
+        }
+        if (!json.hits.hits.length) {
+          dispatch(receiveRecordLoadError('Record not found.'));
+          return;
+        }
+        dispatch(receiveRecord(json.hits.hits[0]._source));
+      });
   };
 }
 
@@ -114,7 +124,7 @@ export function updateSearchResults() {
         },
         query: {
           query_string: {
-            query: getState().searchFilters.text || ''
+            query: (getState().searchFilters.text || '') + '*'
           }
         }
       })
@@ -153,7 +163,7 @@ export function updateSearchResults() {
             must: [
               {
                 query_string: {
-                  query: getState().searchFilters.text || ''
+                  query: (getState().searchFilters.text || '') + '*'
                 }
               },
               {
