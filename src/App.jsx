@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import Map from "./Map";
-import SearchPanel from "./SearchPanel";
-import ViewRecordPanel from "./ViewRecordPanel";
-import Spacer from "./reusable/Spacer";
+import React, { Component } from 'react';
+import Map from './Map.jsx';
+import SearchPanel from './SearchPanel.jsx';
+import ViewRecordPanel from './ViewRecordPanel.jsx';
+import Spacer from './reusable/Spacer.jsx';
 
 class App extends Component {
   render() {

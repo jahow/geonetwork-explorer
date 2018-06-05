@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import TextInput from './reusable/TextInput';
-import Button from './reusable/Button';
+import TextInput from './reusable/TextInput.jsx';
+import Button from './reusable/Button.jsx';
 
 class SearchPanel extends Component {
   render() {
@@ -24,7 +24,7 @@ class SearchPanel extends Component {
         <TextInput placeholder="Search by text..." />
         <div className="flex-spacer" />
         <div className="">
-          <button>TEMPORAL EXTENT</button>
+          <Button className="flex-grow">TEMPORAL EXTENT</Button>
         </div>
         <div className="flex-spacer" />
         <div className="flex-col">
