@@ -8,6 +8,8 @@ import sourceVector from 'ol/source/vector';
 import OSM from 'ol/source/osm';
 import proj from 'ol/proj';
 import WKT from 'ol/format/wkt';
+import Select from 'ol/interaction/select';
+import condition from 'ol/events/condition';
 import { INITIAL_MAP_EXTENT } from './constants.js';
 import {
   setSpatialFilter,
@@ -15,6 +17,7 @@ import {
   setViewedRecord,
   loadViewedRecord
 } from './redux/actions.js';
+import { basicStyle, highlightStyle } from './ol-styles';
 
 const wktFormat = new WKT();
 
@@ -54,7 +57,8 @@ class Map extends Component {
     });
     this._map.addLayer(
       new layerVector({
-        source: this._featuresSource
+        source: this._featuresSource,
+        style: basicStyle
       })
     );
 
@@ -67,6 +71,14 @@ class Map extends Component {
       );
       this.props.setSpatialFilter(extent[0], extent[1], extent[2], extent[3]);
     });
+
+    // add a hiver select
+    this._map.addInteraction(
+      new Select({
+        condition: condition.pointerMove,
+        style: highlightStyle
+      })
+    );
   }
 
   componentWillReceiveProps(props) {
