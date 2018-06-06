@@ -34,7 +34,7 @@ function viewedRecord(state = null, action) {
 function viewedRecordLoadError(state = null, action) {
   switch (action.type) {
     case RECEIVE_RECORD:
-      return action.recordLoadError || state;
+      return action.recordLoadError || null;
     case SET_VIEWED_RECORD:
       return null;
     default:
@@ -68,7 +68,7 @@ function searching(state = false, action) {
 function searchError(state = null, action) {
   switch (action.type) {
     case SEARCH_ENDED:
-      return action.searchError || state;
+      return action.searchError || null;
     default:
       return state;
   }

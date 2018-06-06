@@ -128,6 +128,7 @@ export function updateSearchResults() {
             }
           }
         },
+        size: 50,
         query: {
           query_string: {
             query: (getState().searchFilters.text || '') + '*'
@@ -168,6 +169,7 @@ export function updateSearchResults() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        size: 50,
         query: {
           bool: {
             must: [
@@ -181,7 +183,18 @@ export function updateSearchResults() {
                   resourceType: getState().searchFilters.type
                 }
               }
-            ]
+            ],
+            filter: {
+              geo_shape: {
+                geom: {
+                  shape: {
+                    type: 'envelope',
+                    coordinates: [[-180, -90.0], [180.0, 90.0]]
+                  },
+                  relation: 'within'
+                }
+              }
+            }
           }
         }
       })
@@ -204,7 +217,9 @@ export function updateSearchResults() {
             records: json.hits.hits.map(hit => {
               return {
                 uuid: hit._source.uuid,
-                title: hit._source.resourceTitle
+                title: hit._source.resourceTitle,
+                thumbnail: hit._source.overview,
+                geom: hit._source.geom
               };
             })
           })

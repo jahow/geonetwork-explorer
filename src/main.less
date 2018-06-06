@@ -262,6 +262,9 @@ button {
     margin-left: 0;
   }
   &.search-panel-closed {
+    & > * {
+      display: none;
+    }
     margin-left: calc(~'-25% + 50px');
   }
 }
@@ -273,6 +276,9 @@ button {
     margin-right: 0;
   }
   &.view-record-panel-closed {
+    & > * {
+      display: none;
+    }
     margin-right: calc(~'-40% + 50px');
   }
 }
