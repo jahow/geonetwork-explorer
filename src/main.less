@@ -164,7 +164,7 @@ body {
   box-shadow: @panel-shadow;
 }
 .standard-panel {
-  .panel(lightsalmon);
+  .panel(@panel-color);
 }
 .highlight-panel {
   .panel(@panel-color-highlight);
@@ -229,8 +229,7 @@ button {
   }
 }
 
-.main-map {
-}
+// TEXT INPUTS
 
 .input-text {
   input {
@@ -251,5 +250,29 @@ button {
     bottom: 0.4em;
     height: 2px;
     background-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+// SPECIFIC ELEMENTS
+
+.search-panel {
+  width: 25%;
+  transition: margin-left 0.18s;
+  &.search-panel-opened {
+    margin-left: 0;
+  }
+  &.search-panel-closed {
+    margin-left: calc(~'-25% + 50px');
+  }
+}
+
+.view-record-panel {
+  width: 40%;
+  transition: margin-right 0.18s;
+  &.view-record-panel-opened {
+    margin-right: 0;
+  }
+  &.view-record-panel-closed {
+    margin-right: calc(~'-40% + 50px');
   }
 }

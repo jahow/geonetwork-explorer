@@ -31,6 +31,17 @@ function viewedRecord(state = null, action) {
   }
 }
 
+function viewedRecordLoadError(state = null, action) {
+  switch (action.type) {
+    case RECEIVE_RECORD:
+      return action.recordLoadError || state;
+    case SET_VIEWED_RECORD:
+      return null;
+    default:
+      return state;
+  }
+}
+
 function searchFilters(state = initialFilters, action) {
   switch (action.type) {
     case UPDATE_SEARCH_FILTERS:
@@ -84,6 +95,7 @@ function resultTypes(state = {}, action) {
 const appState = combineReducers({
   viewedRecordUuid,
   viewedRecord,
+  viewedRecordLoadError,
   searchFilters,
   searching,
   records,

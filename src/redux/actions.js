@@ -71,7 +71,7 @@ export function receiveRecord(record) {
 }
 
 export function receiveRecordLoadError(error) {
-  return { type: RECEIVE_RECORD, record: { error } };
+  return { type: RECEIVE_RECORD, record: null, recordLoadError: error };
 }
 
 export function loadViewedRecord() {
@@ -99,7 +99,7 @@ export function loadViewedRecord() {
           return;
         }
         if (!json.hits) {
-          dispatch(receiveSearchError('Geonetwork could not be reached.'));
+          dispatch(receiveRecordLoadError('Geonetwork could not be reached.'));
           return;
         }
         if (!json.hits.hits.length) {

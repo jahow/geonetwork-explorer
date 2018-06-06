@@ -7,7 +7,7 @@ import Spacer from './reusable/Spacer.jsx';
 class App extends Component {
   render() {
     return (
-      <div className="flex-row height-100">
+      <div className="flex-row height-100 width-100 no-overflow">
         <Map />
         <SearchPanel />
         <Spacer grow />

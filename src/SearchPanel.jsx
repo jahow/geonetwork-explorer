@@ -32,8 +32,14 @@ class SearchPanel extends Component {
   }
 
   render() {
+    const attrs = {
+      className:
+        'pos-relative flex-col standard-panel search-panel ' +
+        (this.props.opened ? 'search-panel-opened' : 'search-panel-closed')
+    };
+
     return (
-      <div className="pos-relative width-25 flex-col standard-panel">
+      <div {...attrs}>
         <ButtonBar vertical>
           <Button
             className="flex-grow"
@@ -112,7 +118,8 @@ SearchPanel.defaultProps = {
   resultTypes: {},
   searching: false,
   filters: {},
-  searchError: null
+  searchError: null,
+  opened: true
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -121,7 +128,8 @@ const mapStateToProps = (state, ownProps) => {
     records: state.records,
     searching: state.searching,
     resultTypes: state.resultTypes,
-    searchError: state.searchError
+    searchError: state.searchError,
+    opened: !state.viewedRecordUuid
   };
 };
 

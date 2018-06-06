@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import Spacer from './reusable/Spacer.jsx';
+import Button from './reusable/Button.jsx';
+import { closeRecord } from './redux/actions.js';
 
 class ViewRecordPanel extends Component {
   renderRecord(record) {
@@ -8,7 +10,7 @@ class ViewRecordPanel extends Component {
     return Object.keys(record).map(key => {
       return (
         <div>
-          <div class="highlight-panel">
+          <div className="highlight-panel">
             {key}:<br />
             {JSON.stringify(record[key])}
           </div>
@@ -19,8 +21,20 @@ class ViewRecordPanel extends Component {
   }
 
   render() {
+    const attrs = {
+      className:
+        'pos-relative flex-col standard-panel scroll-y view-record-panel ' +
+        (this.props.opened
+          ? 'view-record-panel-opened '
+          : 'view-record-panel-closed ')
+    };
+
     return (
-      <div className="pos-relative width-33 flex-col standard-panel scroll-y">
+      <div {...attrs}>
+        <div className="flex-no-shrink">
+          <Button onClick={this.props.closeViewedRecord}>CLOSE RECORD</Button>
+        </div>
+        <Spacer no-shrink />
         {this.props.error ? (
           <div className="error-panel">{this.props.error}</div>
         ) : this.props.searching ? (
@@ -36,19 +50,25 @@ class ViewRecordPanel extends Component {
 ViewRecordPanel.defaultProps = {
   record: {},
   searching: false,
-  error: null
+  error: null,
+  opened: false
 };
 
 const mapStateToProps = (state, ownProps) => {
   return {
     record: state.viewedRecord,
     searching: state.viewedRecordUuid && !state.viewedRecord,
-    error: state.viewedRecord && state.viewedRecord.error
+    error: state.recordLoadError,
+    opened: !!state.viewedRecordUuid
   };
 };
 
 const mapDispatchToProps = (dispatch, ownProps) => {
-  return {};
+  return {
+    closeViewedRecord: () => {
+      dispatch(closeRecord());
+    }
+  };
 };
 
 export default connect(
