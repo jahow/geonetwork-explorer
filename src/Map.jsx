@@ -9,10 +9,20 @@ import OSM from 'ol/source/osm';
 import proj from 'ol/proj';
 import WKT from 'ol/format/wkt';
 import { INITIAL_MAP_EXTENT } from './constants.js';
+import {
+  setSpatialFilter,
+  updateSearchResults,
+  setViewedRecord,
+  loadViewedRecord
+} from './redux/actions.js';
 
 const wktFormat = new WKT();
 
 class Map extends Component {
+  constructor(props) {
+    super(props);
+  }
+
   _mapTarget;
   _map;
   _featuresSource;
@@ -47,6 +57,16 @@ class Map extends Component {
         source: this._featuresSource
       })
     );
+
+    // bind map move event
+    this._map.on('moveend', () => {
+      const extent = proj.transformExtent(
+        this._map.getView().calculateExtent(),
+        this._map.getView().getProjection(),
+        'EPSG:4326'
+      );
+      this.props.setSpatialFilter(extent[0], extent[1], extent[2], extent[3]);
+    });
   }
 
   componentWillReceiveProps(props) {
@@ -93,6 +113,10 @@ const mapDispatchToProps = (dispatch, ownProps) => {
     viewRecord: uuid => {
       dispatch(setViewedRecord(uuid));
       dispatch(loadViewedRecord());
+    },
+    setSpatialFilter: (minX, minY, maxX, maxY) => {
+      dispatch(setSpatialFilter(minX, minY, maxX, maxY));
+      dispatch(updateSearchResults());
     }
   };
 };

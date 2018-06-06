@@ -32,7 +32,7 @@ export function setResultType(type) {
 export function setSpatialFilter(minX, minY, maxX, maxY) {
   return {
     type: UPDATE_SEARCH_FILTERS,
-    filters: { spatialFilter: [mminX, minY, maxX, maxY] }
+    filters: { spatialFilter: { minX, minY, maxX, maxY } }
   };
 }
 
@@ -115,23 +115,55 @@ export function loadViewedRecord() {
 export function updateSearchResults() {
   // facets update
   return function(dispatch, getState) {
+    const filters = { ...getState().searchFilters };
+    const box = filters.spatialFilter || {};
+    const commonRequest = {
+      size: 50,
+      query: {
+        bool: {
+          must: [
+            {
+              query_string: {
+                query: (filters.text || '') + '*'
+              }
+            }
+          ],
+          filter: {
+            geo_shape: {
+              geom: {
+                shape: {
+                  type: 'envelope',
+                  coordinates: [
+                    [
+                      !isNaN(box.minX) ? Math.max(box.minX, -180) : -180,
+                      !isNaN(box.minY) ? Math.max(box.minY, -90) : -90
+                    ],
+                    [
+                      !isNaN(box.maxX) ? Math.min(box.maxX, 180) : 180,
+                      !isNaN(box.maxY) ? Math.min(box.maxY, 90) : 90
+                    ]
+                  ]
+                },
+                relation: 'within'
+              }
+            }
+          }
+        }
+      }
+    };
+
     fetch(QUERY_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
+        ...commonRequest,
         aggs: {
           types: {
             terms: {
               field: 'resourceType'
             }
-          }
-        },
-        size: 50,
-        query: {
-          query_string: {
-            query: (getState().searchFilters.text || '') + '*'
           }
         }
       })
@@ -163,41 +195,20 @@ export function updateSearchResults() {
       });
 
     // results update
+    const recordsRequest = {
+      ...commonRequest
+    };
+    recordsRequest.query.bool.must.push({
+      term: {
+        resourceType: filters.type
+      }
+    });
     fetch(QUERY_URL, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        size: 50,
-        query: {
-          bool: {
-            must: [
-              {
-                query_string: {
-                  query: (getState().searchFilters.text || '') + '*'
-                }
-              },
-              {
-                term: {
-                  resourceType: getState().searchFilters.type
-                }
-              }
-            ],
-            filter: {
-              geo_shape: {
-                geom: {
-                  shape: {
-                    type: 'envelope',
-                    coordinates: [[-180, -90.0], [180.0, 90.0]]
-                  },
-                  relation: 'within'
-                }
-              }
-            }
-          }
-        }
-      })
+      body: JSON.stringify(recordsRequest)
     })
       .then(
         response => response.json(),
