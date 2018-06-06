@@ -93,7 +93,14 @@ class Map extends Component {
     });
     clickInteraction.getFeatures().on('add', e => {
       const uuid = e.element.get('uuid');
-      uuid && this.props.viewRecord(uuid);
+      if (!uuid) {
+        return;
+      }
+      this.props.viewRecord(uuid);
+      this._map.getView().fit(e.element.getGeometry(), {
+        duration: 140,
+        padding: [10, 10 + this._map.getSize()[0] * 0.4, 10, 50]
+      });
     });
     this._map.addInteraction(clickInteraction);
   }
