@@ -10,6 +10,8 @@ import proj from 'ol/proj';
 import WKT from 'ol/format/wkt';
 import Select from 'ol/interaction/select';
 import condition from 'ol/events/condition';
+import Feature from 'ol/feature';
+import MultiPolygon from 'ol/geom/multipolygon';
 import { INITIAL_MAP_EXTENT } from './constants.js';
 import {
   setSpatialFilter,
@@ -72,31 +74,66 @@ class Map extends Component {
       this.props.setSpatialFilter(extent[0], extent[1], extent[2], extent[3]);
     });
 
-    // add a hiver select
-    this._map.addInteraction(
-      new Select({
-        condition: condition.pointerMove,
-        style: highlightStyle
-      })
-    );
+    // add a hover select
+    const hoverInteraction = new Select({
+      condition: condition.pointerMove,
+      style: highlightStyle
+    });
+    hoverInteraction.on('select', e => {
+      hoverInteraction.getFeatures().getLength() > 0
+        ? this._map.getTargetElement().classList.add('hovered')
+        : this._map.getTargetElement().classList.remove('hovered');
+    });
+    this._map.addInteraction(hoverInteraction);
+
+    // handle click on feature
+    const clickInteraction = new Select({
+      condition: condition.click,
+      style: highlightStyle
+    });
+    clickInteraction.getFeatures().on('add', e => {
+      const uuid = e.element.get('uuid');
+      uuid && this.props.viewRecord(uuid);
+    });
+    this._map.addInteraction(clickInteraction);
   }
 
   componentWillReceiveProps(props) {
     // clear features on map and add ones from records
     this._featuresSource.clear();
+    this._map.getInteractions().forEach(int => {
+      int.getFeatures && int.getFeatures().clear();
+    });
     props.records.forEach(record => {
       if (!record.geom) {
         return;
       }
-      const geoms = Array.isArray(record.geom) ? record.geom : [record.geom];
-      geoms.forEach(geom => {
-        this._featuresSource.addFeature(
-          wktFormat.readFeature(geom, {
+
+      const feature = new Feature();
+      feature.set('uuid', record.uuid);
+
+      // do either a polygon or multipolygon from the geometry
+      if (Array.isArray(record.geom)) {
+        const multi = new MultiPolygon();
+        record.geom.forEach(geom => {
+          multi.appendPolygon(
+            wktFormat.readGeometry(geom, {
+              dataProjection: 'EPSG:4326',
+              featureProjection: this._map.getView().getProjection()
+            })
+          );
+        });
+        feature.setGeometry(multi);
+      } else {
+        feature.setGeometry(
+          wktFormat.readGeometry(geom, {
             dataProjection: 'EPSG:4326',
             featureProjection: this._map.getView().getProjection()
           })
         );
-      });
+      }
+
+      this._featuresSource.addFeature(feature);
     });
   }
 
